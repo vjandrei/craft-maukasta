@@ -1,0 +1,74 @@
+{#
+ # News entry template
+ # -------------------
+ #
+ # This template gets loaded whenever a News entry’s URL is
+ # requested. That’s because the News section’s Template setting is
+ # set to “news/_entry”, the path to this template.
+ #
+ # When this template is loaded, it will already have an ‘entry’
+ # variable, set to the requested News entry.
+ #
+ # See this page for more details on how Craft routes requests:
+ # http://craftcms.com/docs/routing
+ #}
+
+{% extends "_layout" %}
+
+
+
+{% block content %}
+	<article>
+		<h1>{{ entry.title }}</h1>
+		{{ entry.recipe.name }} <br/>
+		{{ entry.recipe.description }}<br/>
+		{{ entry.recipe.skill }}<br/>
+		{{ entry.recipe.serves }}<br/>
+		{{ entry.recipe.getImageUrl() }}<br/>
+		{{ entry.recipe.prepTime }}<br/>
+		{{ entry.recipe.cookTime }} <br/>
+		{{ entry.recipe.totalTime }} <br/>
+		<p>Posted on {{ entry.postDate.format('F d, Y') }}</p>
+		
+		{{ entry.body }}
+		
+		{% set ratings = entry.recipe.ratings %}
+		{% for rating in ratings %}
+		    {{ rating.rating }} {{ rating.review }} {{ rating.author }}
+		{% endfor %}
+		
+		
+		{% set ingredients = entry.recipe.getIngredients('imperial', 1) %}
+		{% for ingredient in ingredients %}
+		    {{ ingredient }}<br/>
+		{% endfor %}
+		<br/>
+		{% set directions = entry.recipe.getDirections() %}
+		{% for direction in directions %}	
+			{% set cols = 1 %}
+			{% if direction.index0 % cols == 0 %}
+				{{ direction }}<br/>
+			{% endif %}
+			
+			{# other stuff #}
+			{% if (direction.index0 % cols == cols - 1 or direction.last) %}
+				<img style="width: 100%;" src="{{entry.valokuvat[loop.index0].url}}"/>	
+			    <br/>			
+			{% endif %}
+		{% endfor %}
+		
+		
+
+
+
+    {% set params = {id: entry.id} %}
+    {{ craft.CraftyLove.getLikes(params) }} likes!
+    <form method="POST" id="likeForm" action="" accept-charset="UTF-8">
+        <input type="hidden" name="action" value="craftyLove/likes/addNewLike">
+        <input type="hidden" name="id" value="{{ entry.id }}">
+        <button type="submit" id="likeSubmit"><i class="fa fa-heart"></i></button>
+    </form>
+    </p>
+					
+	</article>
+{% endblock %}
